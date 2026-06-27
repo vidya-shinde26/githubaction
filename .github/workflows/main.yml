@@ -1,0 +1,27 @@
+name: deploy to tomcat
+
+on:
+ push:
+   branches: [master]
+
+jobs:
+  deploy:
+   runs-on: self-hosted
+
+   steps:
+     - uses: actions/checkout@v4
+
+     - name: deploy
+       run: |
+        sudo apt update
+        sudo apt install -y openjdk-11-jdk
+        sudo apt install -y tomcat9 tomcat9-admin
+        sudo chmod +x build.sh
+        sudo rm -rf ROOT.war
+        ./build.sh
+
+        sudo rm -rf /var/lib/tomcat9/webapps/*
+        sudo cp ROOT.war /var/lib/tomcat9/webapps/
+        sudo systemctl restart tomcat9
+
+  
